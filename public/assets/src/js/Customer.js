@@ -1,19 +1,18 @@
-var EventObserver = require('./EventObserver').EventObserver;
+import EventObserver from "./EventObserver";
 
-var Customer = function( obj ) {
-  this.name = obj.name;
-};
+export default class Customer extends EventObserver {
 
-$.extend(Customer.prototype, EventObserver.prototype);
-$.extend(Customer, EventObserver.prototype);
+  constructor( obj ) {
+    super();
+    this.name = obj.name;
+  }
+
+  static add( name ) {
+    var customer = new Customer({ name: name });
+
+    Customer.list.push( customer );
+    this.trigger( "add", [customer] );
+  }
+}
 
 Customer.list = [];
-
-Customer.add = function( name ) {
-  var customer = new Customer({ name: name });
-
-  Customer.list.push( customer );
-  this.trigger( "add", [customer] );
-};
-
-module.exports.Customer = Customer;
