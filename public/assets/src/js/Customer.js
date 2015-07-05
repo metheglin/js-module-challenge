@@ -1,9 +1,8 @@
 import EventObserver from "./EventObserver";
 
-export default class Customer extends EventObserver {
+export default class Customer {
 
   constructor( obj ) {
-    super();
     this.name = obj.name;
   }
 
@@ -16,3 +15,5 @@ export default class Customer extends EventObserver {
 }
 
 Customer.list = [];
+$.extend( Customer.prototype, EventObserver.prototype )
+$.extend( Customer, EventObserver.prototype )

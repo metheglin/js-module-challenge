@@ -7,27 +7,20 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
-var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; continue _function; } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) subClass.__proto__ = superClass; }
+var _EventObserver = require("./EventObserver");
 
-var _EventObserver2 = require("./EventObserver");
+var _EventObserver2 = _interopRequireDefault(_EventObserver);
 
-var _EventObserver3 = _interopRequireDefault(_EventObserver2);
-
-var Customer = (function (_EventObserver) {
+var Customer = (function () {
   function Customer(obj) {
     _classCallCheck(this, Customer);
 
-    _get(Object.getPrototypeOf(Customer.prototype), "constructor", this).call(this);
     this.name = obj.name;
   }
-
-  _inherits(Customer, _EventObserver);
 
   _createClass(Customer, null, [{
     key: "add",
@@ -40,11 +33,13 @@ var Customer = (function (_EventObserver) {
   }]);
 
   return Customer;
-})(_EventObserver3["default"]);
+})();
 
 exports["default"] = Customer;
 
 Customer.list = [];
+$.extend(Customer.prototype, _EventObserver2["default"].prototype);
+$.extend(Customer, _EventObserver2["default"].prototype);
 module.exports = exports["default"];
 
 },{"./EventObserver":4}],2:[function(require,module,exports){
@@ -132,67 +127,54 @@ module.exports = exports['default'];
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-
-var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var EventObserver = (function () {
-  function EventObserver() {
-    _classCallCheck(this, EventObserver);
-  }
-
-  _createClass(EventObserver, null, [{
-    key: "on",
-    value: function on(name, listener, context) {
-      if (EventObserver.listeners[name] == null) {
-        EventObserver.listeners[name] = [];
-      }
-      EventObserver.listeners[name].push([listener, context]);
-      return this;
-    }
-  }, {
-    key: "off",
-    value: function off(name, listener) {
-      var i, j, len, listeners, ref;
-      if (!EventObserver.listeners[name]) {
-        return this;
-      }
-      ref = EventObserver.listeners[name];
-      for (i = j = 0, len = ref.length; j < len; i = ++j) {
-        listeners = ref[i];
-        if (listeners[0] === listener) {
-          EventObserver.listeners[name].splice(i, 1);
-        }
-      }
-      return this;
-    }
-  }, {
-    key: "trigger",
-    value: function trigger(name, args) {
-      var j, len, list, listeners, ref;
-      list = (ref = EventObserver.listeners) != null ? ref[name] : void 0;
-      if (!list) {
-        return this;
-      }
-      for (j = 0, len = list.length; j < len; j++) {
-        listeners = list[j];
-        if (listeners[1]) {
-          listeners[0].apply(listeners[1], args);
-        } else {
-          listeners[0].apply(this, args);
-        }
-      }
-      return this;
-    }
-  }]);
-
-  return EventObserver;
-})();
-
 exports["default"] = EventObserver;
 
-EventObserver.listeners = {};
+function EventObserver() {}
+
+;
+
+EventObserver.prototype.on = function (name, listener, context) {
+  if (this.listeners == null) {
+    this.listeners = {};
+  }
+  if (this.listeners[name] == null) {
+    this.listeners[name] = [];
+  }
+  this.listeners[name].push([listener, context]);
+  return this;
+};
+
+EventObserver.prototype.off = function (name, listener) {
+  var i, j, len, listeners, ref;
+  if (!this.listeners[name]) {
+    return this;
+  }
+  ref = this.listeners[name];
+  for (i = j = 0, len = ref.length; j < len; i = ++j) {
+    listeners = ref[i];
+    if (listeners[0] === listener) {
+      this.listeners[name].splice(i, 1);
+    }
+  }
+  return this;
+};
+
+EventObserver.prototype.trigger = function (name, args) {
+  var j, len, list, listeners, ref;
+  list = (ref = this.listeners) != null ? ref[name] : void 0;
+  if (!list) {
+    return this;
+  }
+  for (j = 0, len = list.length; j < len; j++) {
+    listeners = list[j];
+    if (listeners[1]) {
+      listeners[0].apply(listeners[1], args);
+    } else {
+      listeners[0].apply(this, args);
+    }
+  }
+  return this;
+};
 module.exports = exports["default"];
 
 },{}],5:[function(require,module,exports){
